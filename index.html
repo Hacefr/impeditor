@@ -15,11 +15,9 @@
   <!-- Hidden Code-Generated SVG Asset Library (Zero external image files) -->
   <svg style="display: none;">
     <defs>
-      <!-- Base Receptor Arrow (Gray Outline) -->
       <g id="svg-arrow-receptor">
         <path d="M25 5 L45 25 L35 25 L35 45 L15 45 L15 25 L5 25 Z" fill="none" stroke="#555" stroke-width="4" stroke-linejoin="round"/>
       </g>
-      <!-- Note Arrow Template (Filled) -->
       <g id="svg-arrow-note">
         <path d="M25 5 L45 25 L35 25 L35 45 L15 45 L15 25 L5 25 Z" stroke="#111" stroke-width="3" stroke-linejoin="round"/>
       </g>
@@ -30,26 +28,19 @@
 
     <!-- SCREEN 1: FREEPLAY MENU -->
     <section id="screen-freeplay" class="screen active">
-      <!-- Top Folder / Squares Bar -->
       <header class="folder-bar">
         <div id="folder-list" class="folder-tabs-wrapper">
-          <!-- Folders injected via JS -->
           <button class="folder-tab active" data-folder="DEFAULT">MAIN</button>
         </div>
         <button id="btn-add-folder" class="folder-tab btn-icon" title="Add Folder">+</button>
       </header>
 
-      <!-- Main Freeplay Body -->
       <main class="freeplay-content">
-        <!-- Left: Song Capsules -->
         <div class="song-column">
-          <div id="song-list" class="song-list-wrapper">
-            <!-- Dynamic song capsules injected via JS -->
-          </div>
+          <div id="song-list" class="song-list-wrapper"></div>
           <button id="btn-open-add-song" class="btn-capsule btn-action-capsule">+ ADD SONG</button>
         </div>
 
-        <!-- Right: Showcase / Banner Card -->
         <aside class="showcase-card">
           <div id="showcase-banner" class="banner-area">
             <span class="banner-placeholder">No Banner Art Selected</span>
@@ -68,66 +59,110 @@
         </aside>
       </main>
 
-      <!-- Bottom Status / Engine Bar -->
       <footer class="bottom-bar">
         <button id="btn-open-main-files" class="btn-flat">Menu &gt; Main Files</button>
         <div id="engine-status">Engine Ready • Pure Code Mode</div>
       </footer>
     </section>
 
-    <!-- SCREEN 2: GAMEPLAY & STUDIO VIEWPORT (Hidden by default) -->
+    <!-- SCREEN 2: GAMEPLAY & PIXLR-STYLE STUDIO WORKSPACE -->
     <section id="screen-game" class="screen">
-      <!-- PixiJS Canvas Appends Here -->
-      <div id="canvas-container"></div>
+      
+      <!-- Studio UI (Pixlr Suite Theme) -->
+      <div id="studio-ui" class="studio-suite hidden">
+        
+        <!-- Top App Menu Bar (File, Edit, View, Exit) -->
+        <header class="pixlr-menubar">
+          <div class="pixlr-brand">ImpStudio <span class="badge">PRO</span></div>
+          <nav class="pixlr-menu-items">
+            <span class="menu-link">File</span>
+            <span class="menu-link">Edit</span>
+            <span class="menu-link">View</span>
+            <span class="menu-link active" id="studio-song-name">Stargazer</span>
+          </nav>
+          <div class="pixlr-top-actions">
+            <button id="btn-exit-studio" class="pixlr-btn pixlr-btn-danger">Exit Studio</button>
+          </div>
+        </header>
 
-      <!-- Studio Mode: Director UI Overlay -->
-      <div id="studio-ui" class="studio-overlay hidden">
-        <!-- Top Toolbar -->
-        <div class="studio-topbar">
-          <span class="studio-title">STUDIO / DIRECTOR MODE</span>
-          <button id="btn-exit-studio" class="btn-bold">EXIT</button>
+        <!-- Studio Body Layout -->
+        <div class="pixlr-body">
+          
+          <!-- Left Tool Dock (Icons) -->
+          <aside class="pixlr-tooldock">
+            <button class="tool-btn active" title="Transform / Move (V)">✛</button>
+            <button class="tool-btn" title="Layer Select (L)">❐</button>
+            <button class="tool-btn" title="Opacity / Alpha (A)">◐</button>
+            <button class="tool-btn" title="Camera Anchor (C)">🎯</button>
+            <button class="tool-btn" title="Trigger Tool (T)">⚡</button>
+          </aside>
+
+          <!-- Center Canvas Viewport -->
+          <main class="pixlr-canvas-stage">
+            <div id="canvas-container"></div>
+            <div class="canvas-zoom-badge">100% • 1280x720</div>
+          </main>
+
+          <!-- Right Floating Inspector / Layers Panels -->
+          <aside class="pixlr-sidebars">
+            <!-- Layers Panel -->
+            <div class="pixlr-panel">
+              <div class="panel-header">
+                <span>LAYERS</span>
+                <span class="panel-icon">☰</span>
+              </div>
+              <div class="panel-content layer-stack">
+                <div class="layer-item active"><span>▲ Boyfriend (Player 1)</span></div>
+                <div class="layer-item"><span>▲ Lime Green (Player 2)</span></div>
+                <div class="layer-item"><span>■ Strumline Receptors</span></div>
+                <div class="layer-item"><span>■ Stage Background</span></div>
+              </div>
+            </div>
+
+            <!-- Properties Panel -->
+            <div class="pixlr-panel">
+              <div class="panel-header">
+                <span>PROPERTIES</span>
+                <span class="panel-icon">⚙</span>
+              </div>
+              <div class="panel-content" id="inspector-content">
+                <p class="placeholder-text">Click an object on stage to inspect...</p>
+              </div>
+            </div>
+          </aside>
         </div>
 
-        <!-- Middle: Properties Inspector (Right) -->
-        <aside class="inspector-panel">
-          <h3>PROPERTIES</h3>
-          <div id="inspector-content">Select an object on stage...</div>
-        </aside>
-
-        <!-- Bottom: GD-Style Timeline -->
-        <div class="timeline-container">
+        <!-- Bottom Timeline Bar -->
+        <footer class="pixlr-timeline">
           <div class="timeline-controls">
-            <button id="timeline-play">▶</button>
-            <span id="timeline-time">00:00.000</span>
-            <button id="btn-add-trigger" class="btn-bold">+ TRIGGER</button>
+            <button id="timeline-play" class="pixlr-play-btn">▶</button>
+            <span id="timeline-time" class="pixlr-timecode">00:00.000</span>
+            <button id="btn-add-trigger" class="pixlr-btn pixlr-btn-accent">+ Add Trigger</button>
           </div>
           <div id="timeline-track" class="timeline-track">
             <div id="timeline-playhead" class="playhead"></div>
-            <!-- Trigger markers injected via JS -->
           </div>
-        </div>
+        </footer>
+
       </div>
     </section>
 
-    <!-- MODAL 1: ADD SONG (Quick Ingest) -->
+    <!-- MODAL 1: ADD SONG -->
     <div id="modal-add-song" class="modal-backdrop hidden">
       <div class="modal-box">
         <h2 class="modal-title">ADD SONG</h2>
-
         <div class="field-row">
           <select id="add-song-folder-select" class="input-select">
             <option value="DEFAULT">select square...</option>
           </select>
           <button id="btn-quick-add-folder" class="btn-square">+</button>
         </div>
-
         <p class="field-label">Upload files... (song data, song inst, and voices)</p>
         <div id="drop-zone-add-song" class="drop-zone">
           <p class="drop-text">Drag & Drop files here or click to browse</p>
           <div id="file-check-list" class="check-list"></div>
           <input type="file" id="file-input-add-song" multiple hidden />
         </div>
-
         <div class="modal-actions">
           <button id="btn-add-song-done" class="btn-bold">Done</button>
           <button id="btn-add-song-cancel" class="btn-bold">cancel.</button>
@@ -147,7 +182,6 @@
             Click here to modify stage,<br>props, triggers, positions ECT...
           </button>
         </div>
-
         <div class="modify-body">
           <div class="files-manager">
             <label class="field-label">Files:</label>
@@ -158,7 +192,6 @@
             </div>
           </div>
         </div>
-
         <div class="modify-footer">
           <input type="text" id="mod-song-name-input" class="input-text" placeholder="Song Name" />
           <button id="mod-song-icon-btn" class="icon-square" title="Click to set icon">X</button>
@@ -170,7 +203,6 @@
 
   </div>
 
-  <!-- Entry Script (ES Modules) -->
   <script type="module" src="src/main.js"></script>
 </body>
 </html>
