@@ -1,6 +1,6 @@
 /**
  * ImpStudio - Master Application Controller
- * Boots the engine, handles screen transitions, and routes data between menus, engine, and Pixlr studio.
+ * Boots the engine, handles screen transitions, and routes data between menus, gameplay, and studio.
  */
 
 import { db } from './storage/database.js';
@@ -21,7 +21,6 @@ class App {
   constructor() {
     this.screenFreeplay = document.getElementById('screen-freeplay');
     this.screenGame = document.getElementById('screen-game');
-    this.studioUi = document.getElementById('studio-ui');
     this.btnExitStudio = document.getElementById('btn-exit-studio');
     this.btnOpenAddSong = document.getElementById('btn-open-add-song');
     this.inspectorContent = document.getElementById('inspector-content');
@@ -71,8 +70,17 @@ class App {
       this.showScreen('FREEPLAY');
     });
 
+    // Tool dock buttons toggle
+    const toolBtns = document.querySelectorAll('.tool-btn');
+    toolBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        toolBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && this.currentMode === 'GAME') {
+      if (e.key === 'Escape' && (this.currentMode === 'GAME' || this.currentMode === 'STUDIO')) {
         audioManager.stop();
         this.showScreen('FREEPLAY');
       }
@@ -84,21 +92,22 @@ class App {
 
     this.screenFreeplay.classList.remove('active');
     this.screenGame.classList.remove('active');
-    this.studioUi.classList.add('hidden');
+    this.screenGame.classList.remove('studio-mode');
 
     if (mode === 'FREEPLAY') {
       this.screenFreeplay.classList.add('active');
       this.freeplayMenu.refresh();
     } else if (mode === 'GAME') {
       this.screenGame.classList.add('active');
+      // studio-mode is omitted, so studio panels are automatically hidden
     } else if (mode === 'STUDIO') {
       this.screenGame.classList.add('active');
-      this.studioUi.classList.remove('hidden');
+      this.screenGame.classList.add('studio-mode'); // Shows Pixlr panels
     }
   }
 
   // =========================================================================
-  // 1. PLAY SONG (Gameplay)
+  // 1. PLAY SONG (Full Game Screen)
   // =========================================================================
   async playSong(song, difficulty = 'HARD') {
     this.currentSong = song;
@@ -106,6 +115,7 @@ class App {
 
     this.gameEngine.init();
 
+    // Decode Audio
     const instBuffer = await audioManager.loadAudioFromBlob(song.instBlob);
     let voicesBuffer = null;
     if (song.voicesBlob) {
@@ -135,7 +145,7 @@ class App {
   }
 
   // =========================================================================
-  // 2. PIXLR-STYLE STUDIO / DIRECTOR WORKBENCH
+  // 2. PIXLR STUDIO / DIRECTOR WORKBENCH
   // =========================================================================
   async openStudio(song) {
     this.currentSong = song;
@@ -147,8 +157,20 @@ class App {
 
     this.gameEngine.init();
 
+    // DECODE BOTH INST AND VOICES FOR STUDIO
     const instBuffer = await audioManager.loadAudioFromBlob(song.instBlob);
-    audioManager.setTracks(instBuffer);
+    let voicesBuffer = null;
+    if (song.voicesBlob) {
+      voicesBuffer = await audioManager.loadAudioFromBlob(song.voicesBlob);
+    }
+    audioManager.setTracks(instBuffer, voicesBuffer);
+
+    // Load chart so arrows and receptors exist on stage
+    const rawChart = Object.values(song.charts || {})[0];
+    if (rawChart) {
+      const parsedChart = parseFNFChart(rawChart);
+      this.gameEngine.loadSong(parsedChart, instBuffer, voicesBuffer);
+    }
 
     const songDurationMs = instBuffer.duration * 1000;
 
@@ -181,13 +203,17 @@ class App {
       });
     }
 
-    this.gameEngine.app.ticker.add(() => {
-      if (this.currentMode === 'STUDIO') {
-        const timeMs = audioManager.getSongPositionMs();
-        this.timeline.updatePlayhead(timeMs);
-        this.triggerManager.update(timeMs);
-      }
-    });
+    // Single ticker handler
+    this.gameEngine.app.ticker.remove(this.tickStudio, this);
+    this.gameEngine.app.ticker.add(this.tickStudio, this);
+  }
+
+  tickStudio() {
+    if (this.currentMode === 'STUDIO') {
+      const timeMs = audioManager.getSongPositionMs();
+      if (this.timeline) this.timeline.updatePlayhead(timeMs);
+      this.triggerManager.update(timeMs);
+    }
   }
 
   updateInspector(displayObject, idName) {
