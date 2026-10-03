@@ -1,6 +1,6 @@
 /**
  * ImpStudio - Master Application Controller
- * Boots the engine, handles screen transitions, and routes data between menus, engine, and studio.
+ * Boots the engine, handles screen transitions, and routes data between menus, engine, and Pixlr studio.
  */
 
 import { db } from './storage/database.js';
@@ -25,6 +25,7 @@ class App {
     this.btnExitStudio = document.getElementById('btn-exit-studio');
     this.btnOpenAddSong = document.getElementById('btn-open-add-song');
     this.inspectorContent = document.getElementById('inspector-content');
+    this.studioSongName = document.getElementById('studio-song-name');
 
     // Core Systems
     this.gameEngine = new GameEngine('canvas-container');
@@ -33,14 +34,12 @@ class App {
     this.timeline = null;
 
     this.currentSong = null;
-    this.currentMode = 'FREEPLAY'; // 'FREEPLAY' | 'GAME' | 'STUDIO'
+    this.currentMode = 'FREEPLAY';
   }
 
   async init() {
-    // 1. Initialize Database
     await db.init();
 
-    // 2. Initialize UI Modals
     this.addSongModal = new AddSongModal(async () => {
       await this.freeplayMenu.refresh();
     });
@@ -52,7 +51,6 @@ class App {
 
     this.mainFilesMenu = new MainFilesMenu();
 
-    // 3. Initialize Freeplay Menu
     this.freeplayMenu = new FreeplayMenu(
       (song, diff) => this.playSong(song, diff),
       (song) => this.songDetailsModal.open(song),
@@ -60,24 +58,19 @@ class App {
     );
 
     await this.freeplayMenu.refresh();
-
-    // 4. Bind Global Navigation Events
     this.bindEvents();
   }
 
   bindEvents() {
-    // Open Add Song Modal
     this.btnOpenAddSong.addEventListener('click', () => {
       this.addSongModal.open(this.freeplayMenu.currentFolderId);
     });
 
-    // Exit Studio Mode
     this.btnExitStudio.addEventListener('click', () => {
       audioManager.stop();
       this.showScreen('FREEPLAY');
     });
 
-    // Global Keylistener: ESC to return to Freeplay
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && this.currentMode === 'GAME') {
         audioManager.stop();
@@ -105,23 +98,20 @@ class App {
   }
 
   // =========================================================================
-  // 1. PLAY SONG (Standard Rhythm Gameplay)
+  // 1. PLAY SONG (Gameplay)
   // =========================================================================
   async playSong(song, difficulty = 'HARD') {
     this.currentSong = song;
     this.showScreen('GAME');
 
-    // Initialize PixiJS canvas if not ready
     this.gameEngine.init();
 
-    // Decode Audio
     const instBuffer = await audioManager.loadAudioFromBlob(song.instBlob);
     let voicesBuffer = null;
     if (song.voicesBlob) {
       voicesBuffer = await audioManager.loadAudioFromBlob(song.voicesBlob);
     }
 
-    // Load Chart for selected difficulty
     const diffKey = difficulty.toLowerCase();
     const rawChart = (song.charts && song.charts[diffKey]) 
       ? song.charts[diffKey] 
@@ -129,14 +119,11 @@ class App {
 
     const parsedChart = parseFNFChart(rawChart);
 
-    // Setup Triggers (Flashes, Zooms, Opacity)
     this.triggerManager.setTriggers(song.triggers || []);
 
-    // Hook Trigger Manager into GameEngine Ticker
     this.gameEngine.app.ticker.remove(this.tickTriggers, this);
     this.gameEngine.app.ticker.add(this.tickTriggers, this);
 
-    // Start Song
     this.gameEngine.loadSong(parsedChart, instBuffer, voicesBuffer);
     this.gameEngine.start();
   }
@@ -148,21 +135,23 @@ class App {
   }
 
   // =========================================================================
-  // 2. STUDIO / DIRECTOR MODE (GD-Style Editor)
+  // 2. PIXLR-STYLE STUDIO / DIRECTOR WORKBENCH
   // =========================================================================
   async openStudio(song) {
     this.currentSong = song;
     this.showScreen('STUDIO');
 
+    if (this.studioSongName) {
+      this.studioSongName.textContent = song.title || 'Untitled Track';
+    }
+
     this.gameEngine.init();
 
-    // Decode Audio for Scrubber
     const instBuffer = await audioManager.loadAudioFromBlob(song.instBlob);
     audioManager.setTracks(instBuffer);
 
     const songDurationMs = instBuffer.duration * 1000;
 
-    // Setup Timeline
     if (!this.timeline) {
       this.timeline = new StudioTimeline(
         (timestampMs) => this.promptAddTrigger(timestampMs),
@@ -179,19 +168,19 @@ class App {
     this.timeline.setDuration(songDurationMs);
     this.timeline.renderTriggerMarkers(this.currentSong.triggers || []);
 
-    // Setup Transform Gizmos for Characters & Props
     if (!this.gizmos) {
       this.gizmos = new TransformGizmos(this.gameEngine.app, (obj, idName) => {
         this.updateInspector(obj, idName);
       });
 
-      // Attach gizmos to visual elements
-      this.gameEngine.receptors.forEach((rec, idx) => {
-        this.gizmos.attach(rec, `Receptor_Lane_${idx}`);
+      this.gameEngine.playerReceptors.forEach((rec, idx) => {
+        this.gizmos.attach(rec, `Player_Receptor_${idx}`);
+      });
+      this.gameEngine.opponentReceptors.forEach((rec, idx) => {
+        this.gizmos.attach(rec, `Opponent_Receptor_${idx}`);
       });
     }
 
-    // Timeline Playhead Update Loop
     this.gameEngine.app.ticker.add(() => {
       if (this.currentMode === 'STUDIO') {
         const timeMs = audioManager.getSongPositionMs();
@@ -203,24 +192,30 @@ class App {
 
   updateInspector(displayObject, idName) {
     this.inspectorContent.innerHTML = `
-      <div style="font-size:0.85rem;line-height:1.8;">
-        <p><strong>Selected:</strong> ${idName}</p>
-        <p><strong>X:</strong> ${Math.round(displayObject.x)} | <strong>Y:</strong> ${Math.round(displayObject.y)}</p>
-        <label>Scale: 
-          <input type="range" min="0.2" max="3" step="0.1" value="${displayObject.scale.x}" id="prop-scale" />
-        </label><br/>
-        <label>Opacity: 
-          <input type="range" min="0" max="1" step="0.05" value="${displayObject.alpha}" id="prop-alpha" />
-        </label>
+      <div style="font-size:0.8rem;line-height:1.7;color:#eceff4;">
+        <p style="color:#00d2ff;font-weight:bold;margin-bottom:6px;">${idName}</p>
+        <p><strong>X:</strong> ${Math.round(displayObject.x)}px | <strong>Y:</strong> ${Math.round(displayObject.y)}px</p>
+        <div style="margin-top:8px;">
+          <label style="display:flex;justify-content:space-between;">Scale: <span id="val-scale">${displayObject.scale.x.toFixed(1)}</span></label>
+          <input type="range" min="0.2" max="3" step="0.1" value="${displayObject.scale.x}" id="prop-scale" style="width:100%;margin-top:2px;" />
+        </div>
+        <div style="margin-top:8px;">
+          <label style="display:flex;justify-content:space-between;">Opacity: <span id="val-alpha">${displayObject.alpha.toFixed(2)}</span></label>
+          <input type="range" min="0" max="1" step="0.05" value="${displayObject.alpha}" id="prop-alpha" style="width:100%;margin-top:2px;" />
+        </div>
       </div>
     `;
 
     document.getElementById('prop-scale').oninput = (e) => {
-      this.gizmos.setScale(parseFloat(e.target.value));
+      const val = parseFloat(e.target.value);
+      this.gizmos.setScale(val);
+      document.getElementById('val-scale').textContent = val.toFixed(1);
     };
 
     document.getElementById('prop-alpha').oninput = (e) => {
-      this.gizmos.setOpacity(parseFloat(e.target.value));
+      const val = parseFloat(e.target.value);
+      this.gizmos.setOpacity(val);
+      document.getElementById('val-alpha').textContent = val.toFixed(2);
     };
   }
 
@@ -231,7 +226,7 @@ class App {
       `1: FLASH (Screen Flash)\n` +
       `2: OPACITY (Fade Wall / HUD)\n` +
       `3: CAMERA_ZOOM (Target Zoom)\n` +
-      `4: PAUSE (Mid-Song Standoff Freeze)`
+      `4: PAUSE (Mid-Song Cutscene Freeze)`
     );
 
     let newTrigger = null;
@@ -261,8 +256,5 @@ class App {
   }
 }
 
-// Boot the application on page load
-window.addEventListener('DOMContentLoaded', () => {
-  const app = new App();
-  app.init();
-});
+const app = new App();
+app.init();
