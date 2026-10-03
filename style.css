@@ -1,11 +1,11 @@
 /* ==========================================================================
-   PIXLR-INSPIRED THEME & GLOBAL RESET
+   PIXLR THEME & GLOBAL RESET
    ========================================================================== */
 :root {
-  --pixlr-bg: #141518;
-  --pixlr-surface: #1e1f24;
-  --pixlr-panel: #26272e;
-  --pixlr-border: #33353e;
+  --pixlr-bg: #111215;
+  --pixlr-surface: #191a1f;
+  --pixlr-panel: #22232a;
+  --pixlr-border: #2e303a;
   --pixlr-text: #eceff4;
   --pixlr-text-muted: #8a8d9b;
   --pixlr-accent: #00d2ff;
@@ -53,7 +53,7 @@ body, html {
 }
 
 /* ==========================================================================
-   FREEPLAY MENU (Clean Wireframe Style)
+   FREEPLAY MENU
    ========================================================================== */
 #screen-freeplay {
   background-color: var(--wireframe-bg);
@@ -192,38 +192,38 @@ body, html {
 }
 
 /* ==========================================================================
-   PIXLR CREATIVE STUDIO SUITE
+   GAMEPLAY & PIXLR STUDIO SUITE
    ========================================================================== */
-.studio-suite {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--pixlr-bg);
-  position: absolute;
-  top: 0; left: 0;
-  z-index: 10;
+#screen-game {
+  background-color: #0b0c0e;
+  position: relative;
+  overflow: hidden;
 }
 
-.studio-suite.hidden {
-  display: none;
+/* Studio elements are hidden during normal gameplay */
+.studio-only {
+  display: none !important;
+}
+
+/* When in Studio mode, reveal all studio panels */
+#screen-game.studio-mode .studio-only {
+  display: flex !important;
 }
 
 /* Top Menu Bar */
 .pixlr-menubar {
-  height: 42px;
+  height: 44px;
   background: var(--pixlr-surface);
   border-bottom: 1px solid var(--pixlr-border);
-  display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
   font-size: 0.85rem;
+  z-index: 20;
 }
 
 .pixlr-brand {
   font-weight: 900;
-  letter-spacing: 0.5px;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -234,34 +234,28 @@ body, html {
   color: #000;
   font-size: 0.65rem;
   font-weight: 900;
-  padding: 2px 5px;
+  padding: 2px 6px;
   border-radius: 4px;
 }
 
-.pixlr-menu-items {
-  display: flex;
-  gap: 18px;
-}
-
-.menu-link {
-  color: var(--pixlr-text-muted);
-  cursor: pointer;
-  transition: color 0.15s;
-}
-
-.menu-link:hover, .menu-link.active {
+.menu-link.active {
   color: var(--pixlr-text);
+  font-weight: bold;
 }
 
 .pixlr-btn {
   background: var(--pixlr-panel);
   border: 1px solid var(--pixlr-border);
   color: var(--pixlr-text);
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 6px;
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
+}
+
+.pixlr-btn:hover {
+  filter: brightness(1.15);
 }
 
 .pixlr-btn-danger {
@@ -276,23 +270,24 @@ body, html {
   border: none;
 }
 
-/* Studio Body Grid */
-.pixlr-body {
+/* Stage Layout Wrapper */
+.game-stage-wrapper {
   flex: 1;
-  display: grid;
-  grid-template-columns: 48px 1fr 280px;
+  display: flex;
+  position: relative;
   overflow: hidden;
 }
 
 /* Left Tool Dock */
 .pixlr-tooldock {
+  width: 48px;
   background: var(--pixlr-surface);
   border-right: 1px solid var(--pixlr-border);
-  display: flex;
   flex-direction: column;
   align-items: center;
   padding: 10px 0;
   gap: 8px;
+  z-index: 15;
 }
 
 .tool-btn {
@@ -320,35 +315,35 @@ body, html {
   color: #000;
 }
 
-/* Center Stage Viewport */
-.pixlr-canvas-stage {
-  position: relative;
+/* Canvas Viewport */
+.canvas-viewport {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #090a0c;
   overflow: hidden;
+  position: relative;
 }
 
-.canvas-zoom-badge {
-  position: absolute;
-  bottom: 12px;
-  left: 12px;
-  background: rgba(0, 0, 0, 0.7);
-  border: 1px solid var(--pixlr-border);
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  color: var(--pixlr-text-muted);
+#canvas-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Right Side Panels */
+#canvas-container canvas {
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+}
+
+/* Right Sidebars */
 .pixlr-sidebars {
+  width: 280px;
   background: var(--pixlr-surface);
   border-left: 1px solid var(--pixlr-border);
-  display: flex;
   flex-direction: column;
   overflow-y: auto;
+  z-index: 15;
 }
 
 .pixlr-panel {
@@ -359,11 +354,7 @@ body, html {
   padding: 10px 14px;
   font-size: 0.75rem;
   font-weight: 800;
-  letter-spacing: 0.5px;
   color: var(--pixlr-text-muted);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   background: rgba(255, 255, 255, 0.02);
 }
 
@@ -393,13 +384,13 @@ body, html {
 
 /* Bottom Timeline */
 .pixlr-timeline {
-  height: 90px;
+  height: 84px;
   background: var(--pixlr-surface);
   border-top: 1px solid var(--pixlr-border);
-  display: flex;
   flex-direction: column;
   padding: 8px 16px;
   gap: 8px;
+  z-index: 20;
 }
 
 .timeline-controls {
@@ -430,7 +421,7 @@ body, html {
 
 .timeline-track {
   flex: 1;
-  background: #0b0c0e;
+  background: #090a0c;
   border: 1px solid var(--pixlr-border);
   border-radius: 6px;
   position: relative;
@@ -501,9 +492,7 @@ body, html {
 }
 
 .modal-large { max-width: 720px; }
-
 .modal-title { font-weight: 900; font-style: italic; font-size: 1.4rem; }
-
 .field-row { display: flex; gap: 8px; }
 
 .input-select, .input-text {
@@ -540,9 +529,7 @@ body, html {
 }
 
 .drop-zone.dragover { background: #d4ffd4; }
-
 .modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
-
 .modify-footer { display: flex; align-items: center; gap: 8px; }
 
 .icon-square {
