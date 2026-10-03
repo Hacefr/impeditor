@@ -1,16 +1,22 @@
 /* ==========================================================================
-   ROOT VARIABLES & RESET
+   PIXLR-INSPIRED THEME & GLOBAL RESET
    ========================================================================== */
 :root {
-  --bg-color: #dfdede;
-  --surface-color: #efefef;
-  --panel-bg: #cccccc;
-  --border-color: #000000;
-  --text-color: #000000;
-  --border-thick: 4px solid var(--border-color);
-  --border-radius: 12px;
-  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --highlight-color: #ffe600;
+  --pixlr-bg: #141518;
+  --pixlr-surface: #1e1f24;
+  --pixlr-panel: #26272e;
+  --pixlr-border: #33353e;
+  --pixlr-text: #eceff4;
+  --pixlr-text-muted: #8a8d9b;
+  --pixlr-accent: #00d2ff;
+  --pixlr-accent-gradient: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+  --pixlr-danger: #ff4757;
+
+  --wireframe-bg: #dfdede;
+  --wireframe-surface: #efefef;
+  --wireframe-panel: #cccccc;
+  --wireframe-thick: 4px solid #000000;
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 * {
@@ -24,9 +30,9 @@ body, html {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background-color: var(--bg-color);
+  background-color: var(--pixlr-bg);
   font-family: var(--font-family);
-  color: var(--text-color);
+  color: var(--pixlr-text);
 }
 
 #app-container {
@@ -47,15 +53,20 @@ body, html {
 }
 
 /* ==========================================================================
-   FREEPLAY SCREEN
+   FREEPLAY MENU (Clean Wireframe Style)
    ========================================================================== */
+#screen-freeplay {
+  background-color: var(--wireframe-bg);
+  color: #000;
+}
+
 .folder-bar {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 12px 20px;
-  border-bottom: var(--border-thick);
-  background-color: var(--surface-color);
+  border-bottom: var(--wireframe-thick);
+  background-color: var(--wireframe-surface);
   overflow-x: auto;
 }
 
@@ -66,23 +77,18 @@ body, html {
 
 .folder-tab {
   background: transparent;
-  border: var(--border-thick);
+  border: var(--wireframe-thick);
   border-radius: 8px;
   padding: 8px 18px;
   font-weight: 800;
   font-size: 1rem;
   cursor: pointer;
-  transition: transform 0.1s ease, background 0.1s ease;
 }
 
 .folder-tab.active {
-  background-color: var(--border-color);
+  background-color: #000;
   color: #fff;
   transform: translateY(-2px);
-}
-
-.folder-tab.btn-icon {
-  padding: 8px 14px;
 }
 
 .freeplay-content {
@@ -99,7 +105,6 @@ body, html {
   flex-direction: column;
   gap: 16px;
   overflow-y: auto;
-  padding-right: 8px;
 }
 
 .song-list-wrapper {
@@ -112,18 +117,14 @@ body, html {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--surface-color);
-  border: var(--border-thick);
-  border-radius: var(--border-radius);
+  background: var(--wireframe-surface);
+  border: var(--wireframe-thick);
+  border-radius: 12px;
   padding: 16px 24px;
   font-weight: 900;
   font-size: 1.25rem;
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.15s ease;
-}
-
-.btn-capsule:hover {
-  transform: translateX(8px);
+  transition: transform 0.15s ease;
 }
 
 .btn-capsule.selected {
@@ -139,9 +140,9 @@ body, html {
 }
 
 .showcase-card {
-  border: var(--border-thick);
-  border-radius: var(--border-radius);
-  background: var(--panel-bg);
+  border: var(--wireframe-thick);
+  border-radius: 12px;
+  background: var(--wireframe-panel);
   display: flex;
   flex-direction: column;
   padding: 16px;
@@ -150,7 +151,7 @@ body, html {
 
 .banner-area {
   flex: 1;
-  border: var(--border-thick);
+  border: var(--wireframe-thick);
   border-radius: 8px;
   background: #999;
   display: flex;
@@ -158,7 +159,6 @@ body, html {
   justify-content: center;
   text-align: center;
   font-weight: 700;
-  padding: 16px;
 }
 
 .showcase-meta {
@@ -186,34 +186,285 @@ body, html {
   justify-content: space-between;
   align-items: center;
   padding: 8px 20px;
-  border-top: var(--border-thick);
+  border-top: var(--wireframe-thick);
   font-size: 0.9rem;
   font-weight: bold;
 }
 
 /* ==========================================================================
-   BUTTONS & INPUTS
+   PIXLR CREATIVE STUDIO SUITE
    ========================================================================== */
-.btn-bold {
-  border: var(--border-thick);
-  border-radius: 8px;
-  background: var(--surface-color);
-  padding: 10px 16px;
+.studio-suite {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--pixlr-bg);
+  position: absolute;
+  top: 0; left: 0;
+  z-index: 10;
+}
+
+.studio-suite.hidden {
+  display: none;
+}
+
+/* Top Menu Bar */
+.pixlr-menubar {
+  height: 42px;
+  background: var(--pixlr-surface);
+  border-bottom: 1px solid var(--pixlr-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  font-size: 0.85rem;
+}
+
+.pixlr-brand {
   font-weight: 900;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pixlr-brand .badge {
+  background: var(--pixlr-accent-gradient);
+  color: #000;
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+.pixlr-menu-items {
+  display: flex;
+  gap: 18px;
+}
+
+.menu-link {
+  color: var(--pixlr-text-muted);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.menu-link:hover, .menu-link.active {
+  color: var(--pixlr-text);
+}
+
+.pixlr-btn {
+  background: var(--pixlr-panel);
+  border: 1px solid var(--pixlr-border);
+  color: var(--pixlr-text);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
   cursor: pointer;
 }
 
-.btn-bold:active {
-  transform: translateY(2px);
+.pixlr-btn-danger {
+  background: rgba(255, 71, 87, 0.15);
+  border-color: var(--pixlr-danger);
+  color: var(--pixlr-danger);
+}
+
+.pixlr-btn-accent {
+  background: var(--pixlr-accent-gradient);
+  color: #000;
+  border: none;
+}
+
+/* Studio Body Grid */
+.pixlr-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 48px 1fr 280px;
+  overflow: hidden;
+}
+
+/* Left Tool Dock */
+.pixlr-tooldock {
+  background: var(--pixlr-surface);
+  border-right: 1px solid var(--pixlr-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0;
+  gap: 8px;
+}
+
+.tool-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  color: var(--pixlr-text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.tool-btn:hover {
+  background: var(--pixlr-panel);
+  color: var(--pixlr-text);
+}
+
+.tool-btn.active {
+  background: var(--pixlr-accent);
+  color: #000;
+}
+
+/* Center Stage Viewport */
+.pixlr-canvas-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #090a0c;
+  overflow: hidden;
+}
+
+.canvas-zoom-badge {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid var(--pixlr-border);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: var(--pixlr-text-muted);
+}
+
+/* Right Side Panels */
+.pixlr-sidebars {
+  background: var(--pixlr-surface);
+  border-left: 1px solid var(--pixlr-border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.pixlr-panel {
+  border-bottom: 1px solid var(--pixlr-border);
+}
+
+.panel-header {
+  padding: 10px 14px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--pixlr-text-muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.panel-content {
+  padding: 12px 14px;
+}
+
+.layer-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.layer-item {
+  padding: 8px 10px;
+  background: var(--pixlr-panel);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.layer-item.active {
+  border-color: var(--pixlr-accent);
+  background: rgba(0, 210, 255, 0.08);
+}
+
+/* Bottom Timeline */
+.pixlr-timeline {
+  height: 90px;
+  background: var(--pixlr-surface);
+  border-top: 1px solid var(--pixlr-border);
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px;
+  gap: 8px;
+}
+
+.timeline-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pixlr-play-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--pixlr-panel);
+  border: 1px solid var(--pixlr-border);
+  color: var(--pixlr-text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pixlr-timecode {
+  font-family: monospace;
+  font-size: 0.95rem;
+  color: var(--pixlr-accent);
+}
+
+.timeline-track {
+  flex: 1;
+  background: #0b0c0e;
+  border: 1px solid var(--pixlr-border);
+  border-radius: 6px;
+  position: relative;
+  cursor: pointer;
+}
+
+.playhead {
+  width: 2px;
+  height: 100%;
+  background: var(--pixlr-accent);
+  position: absolute;
+  top: 0; left: 0;
+  box-shadow: 0 0 8px var(--pixlr-accent);
+}
+
+/* ==========================================================================
+   BUTTONS & MODALS
+   ========================================================================== */
+.btn-bold {
+  border: var(--wireframe-thick);
+  border-radius: 8px;
+  background: var(--wireframe-surface);
+  padding: 10px 16px;
+  font-weight: 900;
+  cursor: pointer;
 }
 
 .btn-primary { background: #000; color: #fff; }
 .btn-secondary { background: #fff; color: #000; }
 
 .btn-highlight {
-  border: var(--border-thick);
+  border: var(--wireframe-thick);
   border-radius: 8px;
-  background: var(--highlight-color);
+  background: #ffe600;
   padding: 8px 12px;
   font-weight: 800;
   font-size: 0.85rem;
@@ -221,14 +472,11 @@ body, html {
   text-align: center;
 }
 
-/* ==========================================================================
-   MODALS
-   ========================================================================== */
 .modal-backdrop {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -240,9 +488,10 @@ body, html {
 }
 
 .modal-box {
-  background: var(--bg-color);
-  border: var(--border-thick);
-  border-radius: var(--border-radius);
+  background: var(--wireframe-bg);
+  color: #000;
+  border: var(--wireframe-thick);
+  border-radius: 12px;
   padding: 24px;
   width: 90%;
   max-width: 520px;
@@ -251,24 +500,15 @@ body, html {
   gap: 16px;
 }
 
-.modal-large {
-  max-width: 720px;
-}
+.modal-large { max-width: 720px; }
 
-.modal-title {
-  font-weight: 900;
-  font-style: italic;
-  font-size: 1.4rem;
-}
+.modal-title { font-weight: 900; font-style: italic; font-size: 1.4rem; }
 
-.field-row {
-  display: flex;
-  gap: 8px;
-}
+.field-row { display: flex; gap: 8px; }
 
 .input-select, .input-text {
   flex: 1;
-  border: var(--border-thick);
+  border: var(--wireframe-thick);
   border-radius: 8px;
   padding: 10px 14px;
   font-weight: 700;
@@ -278,7 +518,7 @@ body, html {
 
 .btn-square {
   width: 46px;
-  border: var(--border-thick);
+  border: var(--wireframe-thick);
   border-radius: 8px;
   font-weight: 900;
   font-size: 1.2rem;
@@ -286,9 +526,9 @@ body, html {
 }
 
 .drop-zone {
-  border: var(--border-thick);
-  border-radius: var(--border-radius);
-  background: var(--surface-color);
+  border: var(--wireframe-thick);
+  border-radius: 12px;
+  background: var(--wireframe-surface);
   padding: 30px;
   min-height: 140px;
   display: flex;
@@ -299,26 +539,16 @@ body, html {
   text-align: center;
 }
 
-.drop-zone.dragover {
-  background: #d4ffd4;
-}
+.drop-zone.dragover { background: #d4ffd4; }
 
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
+.modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
 
-.modify-footer {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.modify-footer { display: flex; align-items: center; gap: 8px; }
 
 .icon-square {
   width: 48px;
   height: 48px;
-  border: var(--border-thick);
+  border: var(--wireframe-thick);
   border-radius: 8px;
   font-weight: 900;
   display: flex;
