@@ -65,86 +65,70 @@
       </footer>
     </section>
 
-    <!-- SCREEN 2: GAMEPLAY & PIXLR-STYLE STUDIO WORKSPACE -->
+    <!-- SCREEN 2: GAMEPLAY & PIXLR-STYLE STUDIO VIEWPORT -->
     <section id="screen-game" class="screen">
       
-      <!-- Studio UI (Pixlr Suite Theme) -->
-      <div id="studio-ui" class="studio-suite hidden">
-        
-        <!-- Top App Menu Bar (File, Edit, View, Exit) -->
-        <header class="pixlr-menubar">
-          <div class="pixlr-brand">ImpStudio <span class="badge">PRO</span></div>
-          <nav class="pixlr-menu-items">
-            <span class="menu-link">File</span>
-            <span class="menu-link">Edit</span>
-            <span class="menu-link">View</span>
-            <span class="menu-link active" id="studio-song-name">Stargazer</span>
-          </nav>
-          <div class="pixlr-top-actions">
-            <button id="btn-exit-studio" class="pixlr-btn pixlr-btn-danger">Exit Studio</button>
-          </div>
-        </header>
-
-        <!-- Studio Body Layout -->
-        <div class="pixlr-body">
-          
-          <!-- Left Tool Dock (Icons) -->
-          <aside class="pixlr-tooldock">
-            <button class="tool-btn active" title="Transform / Move (V)">✛</button>
-            <button class="tool-btn" title="Layer Select (L)">❐</button>
-            <button class="tool-btn" title="Opacity / Alpha (A)">◐</button>
-            <button class="tool-btn" title="Camera Anchor (C)">🎯</button>
-            <button class="tool-btn" title="Trigger Tool (T)">⚡</button>
-          </aside>
-
-          <!-- Center Canvas Viewport -->
-          <main class="pixlr-canvas-stage">
-            <div id="canvas-container"></div>
-            <div class="canvas-zoom-badge">100% • 1280x720</div>
-          </main>
-
-          <!-- Right Floating Inspector / Layers Panels -->
-          <aside class="pixlr-sidebars">
-            <!-- Layers Panel -->
-            <div class="pixlr-panel">
-              <div class="panel-header">
-                <span>LAYERS</span>
-                <span class="panel-icon">☰</span>
-              </div>
-              <div class="panel-content layer-stack">
-                <div class="layer-item active"><span>▲ Boyfriend (Player 1)</span></div>
-                <div class="layer-item"><span>▲ Lime Green (Player 2)</span></div>
-                <div class="layer-item"><span>■ Strumline Receptors</span></div>
-                <div class="layer-item"><span>■ Stage Background</span></div>
-              </div>
-            </div>
-
-            <!-- Properties Panel -->
-            <div class="pixlr-panel">
-              <div class="panel-header">
-                <span>PROPERTIES</span>
-                <span class="panel-icon">⚙</span>
-              </div>
-              <div class="panel-content" id="inspector-content">
-                <p class="placeholder-text">Click an object on stage to inspect...</p>
-              </div>
-            </div>
-          </aside>
+      <!-- Studio Mode Top Menu Bar -->
+      <header id="studio-topbar" class="pixlr-menubar studio-only">
+        <div class="pixlr-brand">ImpStudio <span class="badge">DIRECTOR</span></div>
+        <nav class="pixlr-menu-items">
+          <span class="menu-link active" id="studio-song-name">Song Name</span>
+        </nav>
+        <div class="pixlr-top-actions">
+          <button id="btn-exit-studio" class="pixlr-btn pixlr-btn-danger">Exit Studio</button>
         </div>
+      </header>
 
-        <!-- Bottom Timeline Bar -->
-        <footer class="pixlr-timeline">
-          <div class="timeline-controls">
-            <button id="timeline-play" class="pixlr-play-btn">▶</button>
-            <span id="timeline-time" class="pixlr-timecode">00:00.000</span>
-            <button id="btn-add-trigger" class="pixlr-btn pixlr-btn-accent">+ Add Trigger</button>
+      <!-- Center Body (Dock + Stage + Panels) -->
+      <div class="game-stage-wrapper">
+        
+        <!-- Left Tool Dock (Studio Mode Only) -->
+        <aside id="studio-tooldock" class="pixlr-tooldock studio-only">
+          <button class="tool-btn active" id="tool-move" title="Select / Move">✛</button>
+          <button class="tool-btn" id="tool-zoom" title="Camera Zoom">🔍</button>
+          <button class="tool-btn" id="tool-opacity" title="Opacity / Alpha">◐</button>
+          <button class="tool-btn" id="tool-trigger" title="Add Trigger">⚡</button>
+        </aside>
+
+        <!-- Canvas Container: Centered and ALWAYS visible -->
+        <main class="canvas-viewport" id="canvas-viewport">
+          <div id="canvas-container"></div>
+        </main>
+
+        <!-- Right Sidebars (Studio Mode Only) -->
+        <aside id="studio-sidebars" class="pixlr-sidebars studio-only">
+          <div class="pixlr-panel">
+            <div class="panel-header"><span>LAYERS</span></div>
+            <div class="panel-content layer-stack">
+              <div class="layer-item active"><span>▲ Player 1 (BF)</span></div>
+              <div class="layer-item"><span>▲ Player 2 (Lime)</span></div>
+              <div class="layer-item"><span>■ Receptors</span></div>
+              <div class="layer-item"><span>■ Stage BG</span></div>
+            </div>
           </div>
-          <div id="timeline-track" class="timeline-track">
-            <div id="timeline-playhead" class="playhead"></div>
+
+          <div class="pixlr-panel">
+            <div class="panel-header"><span>PROPERTIES</span></div>
+            <div class="panel-content" id="inspector-content">
+              <p class="placeholder-text">Click a character or receptor to inspect...</p>
+            </div>
           </div>
-        </footer>
+        </aside>
 
       </div>
+
+      <!-- Studio Mode Bottom Timeline -->
+      <footer id="studio-timeline" class="pixlr-timeline studio-only">
+        <div class="timeline-controls">
+          <button id="timeline-play" class="pixlr-play-btn">▶</button>
+          <span id="timeline-time" class="pixlr-timecode">00:00.000</span>
+          <button id="btn-add-trigger" class="pixlr-btn pixlr-btn-accent">+ Add Trigger</button>
+        </div>
+        <div id="timeline-track" class="timeline-track">
+          <div id="timeline-playhead" class="playhead"></div>
+        </div>
+      </footer>
+
     </section>
 
     <!-- MODAL 1: ADD SONG -->
