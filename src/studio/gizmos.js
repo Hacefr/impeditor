@@ -1,6 +1,7 @@
 /**
  * Visual Transform Gizmos
  * Enables interactive Dragging, Scaling, and Rotation for characters and props.
+ * Compatible with PixiJS v7 and v8 event models.
  */
 export class TransformGizmos {
   constructor(pixiApp, onSelectObject) {
@@ -13,16 +14,21 @@ export class TransformGizmos {
   }
 
   attach(displayObject, idName) {
-    displayObject.interactive = true;
+    displayObject.eventMode = 'static'; // PixiJS v7+ recommended
     displayObject.cursor = 'move';
     displayObject.name = idName;
 
     displayObject.on('pointerdown', (e) => {
       this.selectedTarget = displayObject;
       this.isDragging = true;
-      this.dragOffset = e.data.getLocalPosition(displayObject.parent);
-      this.dragOffset.x -= displayObject.x;
-      this.dragOffset.y -= displayObject.y;
+
+      // Safe cross-version coordinates retrieval
+      const localPos = e.getLocalPosition 
+        ? e.getLocalPosition(displayObject.parent)
+        : (e.data ? e.data.getLocalPosition(displayObject.parent) : { x: e.clientX, y: e.clientY });
+
+      this.dragOffset.x = localPos.x - displayObject.x;
+      this.dragOffset.y = localPos.y - displayObject.y;
 
       if (this.onSelectObject) {
         this.onSelectObject(displayObject, idName);
@@ -32,9 +38,12 @@ export class TransformGizmos {
 
     displayObject.on('pointermove', (e) => {
       if (this.isDragging && this.selectedTarget === displayObject) {
-        const newPos = e.data.getLocalPosition(displayObject.parent);
-        displayObject.x = newPos.x - this.dragOffset.x;
-        displayObject.y = newPos.y - this.dragOffset.y;
+        const localPos = e.getLocalPosition 
+          ? e.getLocalPosition(displayObject.parent)
+          : (e.data ? e.data.getLocalPosition(displayObject.parent) : { x: e.clientX, y: e.clientY });
+
+        displayObject.x = localPos.x - this.dragOffset.x;
+        displayObject.y = localPos.y - this.dragOffset.y;
       }
     });
 
